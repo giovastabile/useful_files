@@ -1,90 +1,26 @@
-# LaTeX Makefile
-FILE=Valentin
-FILE_ARXIV=letterhead_uniurb
+# Makefile for LaTeX — automatically detects the main .tex file
 
-all: $(FILE).pdf
+# Automatically detect the first .tex file in the folder
+MAIN    := $(basename $(firstword $(wildcard *.tex)))
+OUT     := $(MAIN).pdf
 
-.PHONY: clean $(FILE).pdf
+# Default target
+all: $(OUT)
 
+# Compile to PDF
+$(OUT): $(MAIN).tex
+	@echo "Compiling $(MAIN).tex..."
+	pdflatex -interaction=nonstopmode -halt-on-error $(MAIN).tex
+	bibtex $(MAIN) || true
+	pdflatex -interaction=nonstopmode -halt-on-error $(MAIN).tex
+	pdflatex -interaction=nonstopmode -halt-on-error $(MAIN).tex
+	@echo "Output written to $(OUT)"
+
+# Clean up auxiliary files
 clean:
-	rm -f *.aux
-	rm -f *.auxlock
-	rm -f *.bak
-	rm -f *.bbl
-	rm -f *.blg
-	rm -f *.brf
-	rm -f *.dep
-	rm -f *.dvi
-	rm -f *.gz
-	rm -f *.idx
-	rm -f *.ilg
-	rm -f *.ind
-	rm -f *.loa
-	rm -f *.lof
-	rm -f *.log
-	rm -f *.lot
-	rm -f *.mat
-	rm -f *.nav
-	rm -f *.out
-	rm -f *.pdfsync
-	rm -f *.ps
-	rm -f *.snm
-	rm -f *.spl
-	rm -f *.thm
-	rm -f *.toc
-	rm -f *.xdv
-	rm -f *.synctex.gz
-	rm -f *.lox
-	rm -f *.nlo
-	rm -f *.fls
-	rm -f *.nls
-	rm -f *.fdb_latexmk
-	rm -f *.abs
-	rm -f ${FILE}.pdf
+	@echo "Cleaning..."
+	@rm -f *.aux *.log *.bbl *.blg *.out *.toc *.lof *.lot *.fls *.fdb_latexmk *.synctex.gz
 
-arxiv:
-	pdflatex -no-pdf --interaction=nonstopmode ${FILE_ARXIV} -recorder
-	-bibtex ${FILE_ARXIV}
-	pdflatex -no-pdf --interaction=nonstopmode ${FILE_ARXIV} -recorder
-	pdflatex --interaction=nonstopmode ${FILE_ARXIV} -recorder
-
-
-
-$(FILE).pdf: $(FILE).tex
-	pdflatex -no-pdf --interaction=nonstopmode ${FILE}
-	-bibtex ${FILE}
-	pdflatex -no-pdf --interaction=nonstopmode ${FILE}
-	pdflatex --interaction=nonstopmode ${FILE}
-	rm -f *.aux
-	rm -f *.auxlock
-	rm -f *.bak
-	rm -f *.bbl
-	rm -f *.blg
-	rm -f *.brf
-	rm -f *.dep
-	rm -f *.dvi
-	rm -f *.gz
-	rm -f *.idx
-	rm -f *.ilg
-	rm -f *.ind
-	rm -f *.loa
-	rm -f *.lof
-	rm -f *.log
-	rm -f *.lot
-	rm -f *.mat
-	rm -f *.nav
-	rm -f *.out
-	rm -f *.pdfsync
-	rm -f *.ps
-	rm -f *.snm
-	rm -f *.spl
-	rm -f *.thm
-	rm -f *.toc
-	rm -f *.xdv
-	rm -f *.lox
-	rm -f *.nlo
-	rm -f *.fls
-	rm -f *.nls
-	rm -f *.fdb_latexmk
-	rm -f *.abs
-
+# Remove also the PDF
+distclean: clean
+	@rm -f $(OUT)
